@@ -4,31 +4,53 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    public float speed = 0.0f;
+    public float speed = 1.0f;
     Animator _animator;
     Rigidbody2D r2d;
+    Vector3 charPos;
+    SpriteRenderer _spriteRenderer;
+
+    [SerializeField] GameObject _camera;
 
     void Start()
     {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         r2d = GetComponent<Rigidbody2D>();
+        charPos = transform.position;
+    }
+
+    void FixedUpdate() // (Timescale / fixed timestep) All physics applications must be in the fixedupdate method.
+    {
+        //r2d.velocity = new Vector2(speed, 0f);
     }
 
     void Update() 
     {
-        if (Input.GetKey(KeyCode.Space))
+        charPos = new Vector3(charPos.x + (Input.GetAxis("Horizontal") * speed * Time.deltaTime), charPos.y);
+        transform.position = charPos;
+
+        if (Input.GetAxis("Horizontal") == 0.0f)
         {
-            speed = 1.0f;
-            Debug.Log("hız 1");
+            _animator.SetFloat(nameof(speed), 0.0f);
         }
         else
         {
-            speed = 0.0f;
-            Debug.Log("Hız 0");
+            _animator.SetFloat(nameof(speed), speed);
         }
 
-        _animator.SetFloat(nameof(speed), speed);
-        r2d.velocity = new Vector2(speed, 0f);
+        if (Input.GetAxis("Horizontal") > 0.01f)
+        {
+            _spriteRenderer.flipX = false;
+        } else if (Input.GetAxis("Horizontal") < -0.01f)
+        {
+            _spriteRenderer.flipX = true;
+        }
+    }
+
+    void LateUpdate() 
+    {
+        _camera.transform.position = new Vector3(charPos.x, charPos.y, charPos.z - 1.0f);
     }
 
 }
