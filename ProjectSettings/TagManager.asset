@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Zemin
+  - Diamond
   layers:
   - Default
   - TransparentFX
